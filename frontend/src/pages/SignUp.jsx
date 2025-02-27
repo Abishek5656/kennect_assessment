@@ -3,28 +3,48 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 
+
+
 const SignUp = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
-  const handleSignUp = async () => {
-    console.log("Username:", username, "Password:", password);
-   
 
-     try {
-      
-     } catch (error) {
-      
-     }
+  const handleSignUp = async () => {
+
+    setLoading(true)
+    try {
+
+      // const res = await fetch(`${import.meta.env.VITE_BASE_URL}/user/register`, {
+        const res = await fetch(`http://localhost:7000/api/v1/user/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+
+      if (data) {
+        navigate("/login")
+      }
+      setLoading(false)
+      toast.success(data.message)
+
+
+    } catch (error) {
+      console.log(error);
+      setLoading(false)
+    }
 
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-6">Sign In</h2>
+        <h2 className="text-2xl font-bold text-center mb-6">Sign Up</h2>
 
         <input
           type="text"
@@ -44,9 +64,9 @@ const SignUp = () => {
 
         <button
           className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
-          onClick={handleLogin}
+          onClick={handleSignUp}
         >
-          Sign Up
+         {loading ? <p>loading</p>: <p>Sign Up</p>}
         </button>
 
         <p className="mt-4 text-center text-gray-600">
