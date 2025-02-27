@@ -1,12 +1,18 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import ProtectedRoute from "./pages/ProtectedRoute.jsx"; 
+import {useSelector} from "react-redux";
 
-const SignUp = React.lazy(() => import("./pages/singup.jsx"));
+import { user } from "./store/slice/userSlice.js"
+
+const SignUp = React.lazy(() => import("./pages/SignUp.jsx"));
 const Login = React.lazy(() => import("./pages/Login.jsx"));
+const Homelayout = React.lazy(() => import("./pages/Homelayout.jsx"))
+
 
 function App() {
-  const user = false;
+
+  const userDetails = useSelector(user);
 
   return (
     <>
@@ -14,8 +20,8 @@ function App() {
         <BrowserRouter>
           <Routes>
           <Route  path="/" element={
-                <ProtectedRoute user={user}>
-                  <>Home Page (Protected)</>
+                <ProtectedRoute user={userDetails}>
+                 <Homelayout />
                 </ProtectedRoute>
               }
             />
