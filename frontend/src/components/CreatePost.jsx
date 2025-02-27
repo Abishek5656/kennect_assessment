@@ -1,29 +1,41 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
+import Cookies from "js-cookie";
 
 const CreatePost = ({ addNewPost }) => {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!title || !content) return;
 
-        // Creating a new post object
-        const newPost = {
-            id: Date.now(), // Unique ID
-            title,
-            content,
-            owner: "You", // Example (Change based on authentication)
-            time: "Just now",
-            comments: [],
-        };
+        const token = Cookies.get("accessToken");
+        try {
+            const res = await fetch('http://localhost:7000/api/v1/post/create', {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization":`Bearer ${token}`
+                },
+                body: JSON.stringify({ title, content }),
+                credentials: "include",
+            })
 
-        // Adding new post to state
-        addNewPost(newPost);
+            const data = await res.json();
 
-        // Clearing input fields
-        setTitle("");
-        setContent("");
+            if(data) {
+                toast.success(data.message)
+                 setTitle("");
+                setContent("");
+            }
+
+             
+        } catch (error) {
+            toast.error(error.message)
+            setTitle("");
+            setContent("");
+        }
     };
 
     return (
