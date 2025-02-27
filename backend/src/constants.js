@@ -1,1 +1,1 @@
-export const DB_NAME = "assignment"
+export const DB_NAME = "POST"
