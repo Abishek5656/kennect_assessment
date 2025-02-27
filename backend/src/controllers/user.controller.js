@@ -6,6 +6,8 @@ const registerUser = async (req, res) => {
   try {
     const { username, password } = req.body;
 
+    console.log(username)
+
     const existingUser = await User.findOne({ username });
 
     if (existingUser) {
@@ -65,12 +67,20 @@ const userLogin = async (req, res) => {
         { userId: user._id, username: user.username },
         process.env.JWT_KEY
       );
-
-      return res.status(200).cookie("accessToken", token).json({
-        success: true,
-        message: "User Login Successfully",
-        data:user
+      res.status(200)
+      .cookie("accessToken", token, {
+          httpOnly: true,  
+          secure: false,    
+          sameSite: "none",
+      })
+      .json({
+          success: true,
+          message: "User Login Successfully",
+          data: user,
+          token: token,
       });
+  
+    
   } catch (error) {
     return res.status(500).json({
       message: "Something went wrong",
