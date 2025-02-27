@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     username: "",
-    password: "",
+    token: "",
 };
 
 const userSlice = createSlice({
@@ -10,13 +10,14 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         userDetails: (state, action) => {
-            state.username = action.payload.username;
-            state.password = action.payload.password;
+            // console.log("action0->", action)
+            state.username = action.payload.data.username;
+            state.token = action.payload.token;
         },
     },
 });
 
-export const selectUser = (state) => state.user; 
+export const user = (state) => state.user; 
 
 export const { userDetails } = userSlice.actions;
 
