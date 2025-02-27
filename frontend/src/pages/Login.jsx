@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { userDetails } from "../store/slice/userSlice.js";
+import Cookies from "js-cookie";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -10,9 +11,32 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+
+    // if(username !== "" || password !== "") {
+    //   return 
+    // }
     
-   
+   try {
+    const res = await fetch(`http://localhost:7000/api/v1/user/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await res.json();
+
+    if(data.success) {
+      dispatch(userDetails(data))
+      navigate("/")
+      Cookies.set("accessToken", data.token, { expires: 1, path: "/" });
+    }
+    toast.success(data.message)
+   } catch (error) {
+    toast.error(error.message)
+   }
   };
 
   return (
