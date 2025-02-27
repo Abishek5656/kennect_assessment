@@ -8,15 +8,17 @@ const commentSchema = new Schema(
       lowercase: true,
     },
     postId: {
-        type: Schema.Types.ObjectId,
-        ref: "Post"
+      type: Schema.Types.ObjectId,
+      ref: "Post",
+      required: true, 
     },
-
+    commentedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
-  {
-    timestamps: true,
-  } 
+  { timestamps: true }
 );
 
-
-const Comment = mongoose.model("Comment", commentSchema);
+export const Comment = mongoose.model("Comment", commentSchema);
