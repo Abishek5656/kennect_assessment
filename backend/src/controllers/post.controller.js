@@ -1,125 +1,170 @@
 import { Post } from "../models/post.model.js";
+import { User } from "../models/user.model.js";
 
 const createPost = async (req, res) => {
-    const { title, content } = req.body;
+  const { title, content } = req.body;
 
-    try {
-        const post = await Post.create({
-            title,
-            content,
-        });
+  const { _id } = req.admin;
 
-        return res.status(200).json({
-            data: post,
-            message: "Post Created Successfully",
-            success: true,
-        });
-    } catch (error) {
-        return res.status(500).json({
-            data: "",
-            message: "Something went wrong",
-            success: false,
-        });
+  try {
+    const user = await User.findById(_id);
+
+    if (!user) {
+      return res.status(404).json({
+        data: "",
+        message: "User not found",
+        success: false,
+      });
     }
+
+    const post = await Post.create({
+      title,
+      content,
+      owner: user._id,
+    });
+
+    return res.status(200).json({
+      data: post,
+      message: "Post Created Successfully",
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      data: "",
+      message: "Something went wrong",
+      success: false,
+    });
+  }
 };
 
 const getAllPost = async (req, res) => {
-    try {
-        const posts = await Post.find();
+  const { _id } = req.admin;
 
-        return res.status(200).json({
-            data: posts,
-            message: "",
-            success: true,
-        });
-    } catch (error) {
-        return res.status(200).json({
-            data: "",
-            message: "Something went wrong",
-            success: false,
-        });
+  try {
+    const user = await User.findById(_id);
+
+    if (!user) {
+      return res.status(404).json({
+        data: "",
+        message: "User not found",
+        success: false,
+      });
     }
+
+    const posts = await Post.find({});
+
+    return res.status(200).json({
+      data: posts,
+      message: "",
+      success: true,
+    });
+  } catch (error) {
+    return res.status(200).json({
+      data: "",
+      message: "Something went wrong",
+      success: false,
+    });
+  }
 };
 
 const updatePost = async (req, res) => {
-    const { postId } = req.query;
-    const { title, content } = req.body;
+  const { id } = req.params
 
-    try {
-        const existingPost = await Post.find({ _id: postId });
+  const { title, content } = req.body;
+  const { _id } = req.admin;
 
-        if (!existingPost) {
-            return res.status(500).json({
-                data: "",
-                message: "Post details not found",
-                success: false,
-            });
-        }
+  try {
+    const existingPost = await Post.findById(id);
 
-        const updatePostDetails = await Post.findByIdAndUpdate(
-            postId,
-            {
-                $set: {
-                    title: title,
-                    content: content,
-                },
-            },
-            { new: true }
-        );
-
-        return res.status(500).json({
-            data: updatePostDetails,
-            message: "Post details updated ",
-            success: true,
-        });
-    } catch (error) {
-        return res.status(500).json({
-            data: "",
-            message: "Something went wrong",
-            success: false,
-        });
+    if (!existingPost) {
+      return res.status(500).json({
+        data: "",
+        message: "Post details not found",
+        success: false,
+      });
     }
+
+    const postOwner = await Post.findOne({ _id: id, owner: _id });
+
+    if (!postOwner) {
+      return res.status(403).json({
+        data: "",
+        message: "Only the owner can update the post",
+        success: false,
+      });
+    }
+
+    const updatePostDetails = await Post.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          title: title,
+          content: content,
+        },
+      },
+      { new: true }
+    );
+
+    return res.status(500).json({
+      data: updatePostDetails,
+      message: "Post details updated ",
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      data: "",
+      message: "Something went wrong",
+      success: false,
+    });
+  }
 };
 
-
-
 const deletePostDetails = async (req, res) => {
+  const { id } = req.params;
 
-    const { postId } = req.body;
+  const { _id } = req.admin;
+  
 
-    // const { } = req.
+  try {
+    const postDetails = await Post.findById(postId);
 
-    try {
+    // if(postDetails && postDetails.owner === userId) {
 
-        const postDetails = await Post.findById(postId);
+    // }
 
-        // if(postDetails && postDetails.owner === userId) {
-
-        // }
-
-        if (!postDetails) {
-            return res.status(500).json({
-                data: "",
-                message: "Post details not found",
-                success: false,
-            });
-        }
-
-        const deletePost = await Post.findByIdAndDelete(postId)
-
-        return res.status(500).json({
-            data: "",
-            message: "Post Deleted Ssuccefully",
-            success: false,
-        });
-
-    } catch (error) {
-        return res.status(500).json({
-            data: "",
-            message: "Something went wrong",
-            success: false,
-        });
+    if (!postDetails) {
+      return res.status(500).json({
+        data: "",
+        message: "Post details not found",
+        success: false,
+      });
     }
-}
+
+    const deletePost = await Post.findByIdAndDelete({
+      _id: id,
+      owner:_id
+    });
+
+    if(!deletePost) {
+      return res.status(400).json({
+        data: "",
+        message: "Only Owner Can Deleted",
+        success: false,
+      });
+    }
+
+    return res.status(500).json({
+      data: "",
+      message: "Post Deleted Ssuccefully",
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      data: "",
+      message: "Something went wrong",
+      success: false,
+    });
+  }
+};
 
 export { createPost, getAllPost, deletePostDetails, updatePost };

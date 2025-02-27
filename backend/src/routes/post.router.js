@@ -1,14 +1,18 @@
 import { Router } from 'express';
-import {  createPost, getAllPost, deletePostDetails, updatePost } from "../controllers/post.controller.js"
+import {  createPost, getAllPost, deletePostDetails, updatePost } from "../controllers/post.controller.js";
+import {verifyJWT } from "../middleware/auth.middleware.js"
 
 const router = Router();
 
+router.use(verifyJWT);
+
+router.get("/allposts", getAllPost);
+
 router.post("/create", createPost);
 
-router.get("/posts", getAllPost);
+router.patch("/update/:id",updatePost);
 
-router.patch("/update",updatePost);
+router.delete("/delete/:id", deletePostDetails)
 
-router.delete("/delete", deletePostDetails)
 
 export default router
