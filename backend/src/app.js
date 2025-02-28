@@ -5,9 +5,10 @@ import cookieParser from 'cookie-parser';
 const app = express()
 
 app.use(cors({
-    origin: "https://abishekpost.netlify.app",
-    credentials: true,
-    methods: "GET, POST, PUT, DELETE,PATCH"
+    origin: "https://abishekpost.netlify.app", 
+    credentials: true, 
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    allowedHeaders: ["Authorization", "Content-Type"]
 }));
 
 
