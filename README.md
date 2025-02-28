@@ -1,7 +1,7 @@
 
 ## Demo
 
-Insert gif or link to demo
+https://github.com/user-attachments/assets/896c341a-32f0-4de6-b7b7-92f521ffb354
 
 
 ## Prerequisit
