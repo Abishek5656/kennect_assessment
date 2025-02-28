@@ -1,40 +1,45 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
+import { addPostDetails } from "../store/slice/postSlice.js";
+import {  BASE} from "../constant/index.js"
 
-const CreatePost = ({ addNewPost }) => {
+const CreatePost = () => {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
+    const dispatch = useDispatch();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!title || !content) return;
 
         const token = Cookies.get("accessToken");
+
         try {
-            const res = await fetch('http://localhost:7000/api/v1/post/create', {
+            const res = await fetch(`${BASE}/post/create`, {
                 method: "POST",
                 headers: {
-                  "Content-Type": "application/json",
-                  "Authorization":`Bearer ${token}`
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({ title, content }),
                 credentials: "include",
-            })
+            });
 
             const data = await res.json();
 
-            if(data) {
-                toast.success(data.message)
-                 setTitle("");
+            if (res.ok) {
+                toast.success(data.message);
+                setTitle("");
                 setContent("");
+                dispatch(addPostDetails(data.data)); 
+            } else {
+                toast.error(data.message || "Failed to create post");
             }
 
-             
         } catch (error) {
-            toast.error(error.message)
-            setTitle("");
-            setContent("");
+            toast.error(error.message);
         }
     };
 
