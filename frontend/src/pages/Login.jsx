@@ -78,7 +78,7 @@ const Login = () => {
           Don't have an account?{" "}
           <span
             className="text-blue-600 cursor-pointer hover:underline"
-            onClick={() => navigate("/signUp")}
+            onClick={() => navigate("/signup")}
           >
             Register
           </span>
