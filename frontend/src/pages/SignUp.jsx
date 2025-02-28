@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
+import {BASE } from "../constant/index.js"
 
 
 
@@ -17,8 +18,12 @@ const SignUp = () => {
     setLoading(true)
     try {
 
-      // const res = await fetch(`${import.meta.env.VITE_BASE_URL}/user/register`, {
-        const res = await fetch(`http://localhost:7000/api/v1/user/register`, {
+       if (!username.trim() || !password.trim()) {
+            toast.error("Username and Password are required");
+            return;
+          }
+    
+        const res = await fetch(`${BASE}/user/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
