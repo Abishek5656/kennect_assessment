@@ -37,7 +37,7 @@ function App() {
 
           {/* SignUp Route */}
           <Route
-            path="/signUp"
+            path="/signup"
             element={token ? <Navigate to="/" /> : <SignUp />}
           />
         </Routes>
