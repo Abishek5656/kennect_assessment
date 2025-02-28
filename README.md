@@ -3,6 +3,10 @@
 
 https://github.com/user-attachments/assets/896c341a-32f0-4de6-b7b7-92f521ffb354
 
+##Postman Collection
+
+https://documenter.getpostman.com/view/29785161/2sAYdhJVnm
+
 
 ## Prerequisit
  Node version 20.x
