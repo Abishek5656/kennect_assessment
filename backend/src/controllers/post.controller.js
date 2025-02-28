@@ -43,6 +43,8 @@ const getAllPost = async (req, res) => {
   try {
     const user = await User.findById(_id);
 
+    console.log(user)
+
     if (!user) {
       return res.status(404).json({
         data: "",
@@ -51,7 +53,25 @@ const getAllPost = async (req, res) => {
       });
     }
 
-    const posts = await Post.find({});
+    const posts = await Post.aggregate([
+      { $match: {} },
+      { $lookup: {
+        from:"users",
+        localField:"owner",
+        foreignField:"_id",
+        as:"userDetails"
+      }},
+      {
+        $addFields: {
+          user: { $arrayElemAt: ["$userDetails", 0] }
+        }
+      },
+      {$project: {title: 1, content:1, createdAt:1,owner:1, username:"$user.username", comments:1}},
+      { $sort: { createdAt: -1 } } 
+  ]);
+  ;
+
+    console.log(posts)
 
     return res.status(200).json({
       data: posts,
@@ -127,10 +147,6 @@ const deletePostDetails = async (req, res) => {
 
   try {
     const postDetails = await Post.findById(postId);
-
-    // if(postDetails && postDetails.owner === userId) {
-
-    // }
 
     if (!postDetails) {
       return res.status(500).json({
