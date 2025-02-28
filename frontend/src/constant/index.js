@@ -1,1 +1,1 @@
-export const BASE = import.meta.env.VITE_BASE_URL;
+export const BASE = "https://kennect-assessment.onrender.com";
