@@ -2,48 +2,26 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { userDetails } from "../store/slice/userSlice.js";
-import Cookies from "js-cookie";
+import {userLogin } from "../store/slice/userSlice.js";
+
 import { BASE } from "../constant/index.js"
 
 const Login = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  
   const handleLogin = async () => {
-
     if (!username.trim() || !password.trim()) {
       toast.error("Username and Password are required");
       return;
     }
-
-    try {
-
-      const res = await fetch(`${BASE}/user/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        dispatch(userDetails(data));
-        navigate("/");
-        Cookies.set("accessToken", data.token, { expires: 1, path: "/" });
-        localStorage.setItem("username", data.data.username);
-        localStorage.setItem("token", data.token);
-        toast.success(data.message);
-      } else {
-        toast.error(data.message || "Invalid credentials");
-      }
-    } catch (error) {
-      toast.error("Something went wrong. Please try again later.");
-    }
+    dispatch(userLogin({ username, password }));
+    navigate("/");
+    setUsername(""),
+    setPassword("")
   };
 
   return (

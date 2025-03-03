@@ -1,29 +1,29 @@
-import { useEffect } from "react";
-import Header from "../components/Header.jsx";
-import PostList from "../components/PostList.jsx";
-import CreatePost from "../components/CreatePost.jsx"
-import Cookies from "js-cookie";
+import React, { Suspense, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { postDetails, selectPosts } from "../store/slice/postSlice.js";
-import useFetchPost from "../hook/useFetchPost.js"
+import { allPostsDetails, fetchPost } from "../store/slice/postSlice.js";
 
+
+const Header = React.lazy(() => import("../components/Header.jsx"));
+const CreatePost = React.lazy(() => import("../components/CreatePost.jsx"));
+const PostList = React.lazy(() => import("../components/PostList.jsx"));
 
 const HomeLayout = () => {
-    
-    const fetchPost = useFetchPost()
-
     const dispatch = useDispatch();
-    
+    const posts = useSelector(allPostsDetails);
+
+    useEffect(() => {
+        dispatch(fetchPost());
+    }, [dispatch]);
+
     return (
         <div className="min-h-screen bg-gray-100">
-            {/* Header */}
-            <Header />
-
-            {/* Content Section */}
-            <div className="max-w-3xl mx-auto mt-6 p-4">
-                <CreatePost />
-                <PostList posts={fetchPost || []} />
-            </div>
+            <Suspense fallback={<div>Loading Header...</div>}>
+                <Header />
+                <div className="max-w-3xl mx-auto mt-6 p-4">
+                    <CreatePost />
+                    <PostList posts={posts || []} />
+                </div>
+            </Suspense>
         </div>
     );
 };

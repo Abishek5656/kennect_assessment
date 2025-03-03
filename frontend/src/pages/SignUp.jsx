@@ -1,48 +1,27 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import {BASE } from "../constant/index.js"
-
-
+import { registerUser } from "../store/slice/userSlice.js";
 
 const SignUp = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false)
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
   const handleSignUp = async () => {
 
     setLoading(true)
-    try {
-
-       if (!username.trim() || !password.trim()) {
-            toast.error("Username and Password are required");
-            return;
-          }
-    
-        const res = await fetch(`${BASE}/user/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-      const data = await res.json();
-
-      if (data) {
-        navigate("/login")
-      }
-      setLoading(false)
-      toast.success(data.message)
-
-
-    } catch (error) {
-      console.log(error);
-      setLoading(false)
+    if (!username.trim() || !password.trim()) {
+      toast.error("Username and Password are required");
+      return;
     }
+    dispatch(registerUser({ username, password }));
+    navigate("/login")
+    setUsername("")
+    setPassword("")
+    setLoading(true
+    )
 
   };
 
@@ -71,7 +50,7 @@ const SignUp = () => {
           className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
           onClick={handleSignUp}
         >
-         {loading ? <p>loading</p>: <p>Sign Up</p>}
+          {loading ? <p>loading</p> : <p>Sign Up</p>}
         </button>
 
         <p className="mt-4 text-center text-gray-600">

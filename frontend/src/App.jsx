@@ -9,6 +9,7 @@ const SignUp = React.lazy(() => import("./pages/SignUp.jsx"));
 const Login = React.lazy(() => import("./pages/Login.jsx"));
 const Homelayout = React.lazy(() => import("./pages/Homelayout.jsx"));
 
+
 function App() {
   const userDetails = useSelector(user);
   const token = localStorage.getItem("token"); 
