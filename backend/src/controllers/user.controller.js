@@ -6,34 +6,52 @@ const registerUser = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-  
-
+    // Check if the user already exists
     const existingUser = await User.findOne({ username });
 
     if (existingUser) {
       return res.status(200).json({
         status: false,
-        message: "User already found",
+        message: "User already exists",
         data: "",
       });
     }
 
-    const hassedPassword = await generateHassedPassword(password);
+    // Hash the password
+    const hashedPassword = await generateHassedPassword(password);
 
+    // Create a new user
     const user = await User.create({
       username,
-      password: hassedPassword,
+      password: hashedPassword,
     });
 
-    return res.status(200).json({
-      message: "user created successfully",
-      data: user,
-      success: true,
-    });
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id, username: user.username },
+      process.env.JWT_KEY,
+      { expiresIn: "7d" } 
+    );
+
+  
+    res.status(200)
+      .cookie("accessToken", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", 
+        sameSite: "strict",
+      })
+      .json({
+        message: "User created successfully",
+        data: user,
+        token: token,
+        success: true,
+      });
+
   } catch (error) {
+    console.error("Error in registerUser:", error);
     return res.status(500).json({
       message: "Something went wrong",
-      data: "",
+      error: error.message, // Show the error message
       success: false,
     });
   }
